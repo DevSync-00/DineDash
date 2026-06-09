@@ -208,20 +208,20 @@ export default function App() {
       if (result.simulated) {
         addToast(
           'Registration Simulated! 🎟️',
-          `Welcome ${data.ownerName}! Simulated email notification & DB record saved. Add RESEND_API_KEY to environment secrets to trigger actual delivery.`,
+          `Welcome ${data.ownerName}! Simulated email notification & database record saved. Add RESEND_API_KEY to environment secrets to trigger actual delivery.`,
           'info'
         );
       } else if (!result.emailNotified && result.resendError) {
         console.warn('Resend server rejected mail dispatch:', result.resendError);
         addToast(
-          'Saved to DB, Mail failed ⚠️',
-          `Successfully saved to Supabase! But Resend rejected the email to dinedash@bitlabsbuild.com: ${result.resendError}`,
+          'Onboarded Successfully ⚠️',
+          `Registered successfully in our backend! Resend notice: ${result.resendError}`,
           'alert'
         );
       } else {
         addToast(
           'Registration Complete! 🎟️',
-          `Successfully saved to Supabase & sent waitlist alert email! Welcome, ${data.ownerName}.`,
+          `Successfully registered in our system and sent confirmation emails! Welcome, ${data.ownerName}.`,
           'success'
         );
       }

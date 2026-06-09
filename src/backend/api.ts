@@ -11,7 +11,57 @@ function getSupabaseClient() {
   return createClient(url, anonKey);
 }
 
-// Helper to notify via Resend API
+// Helper to send a single email via Resend
+async function sendSingleEmail(
+  apiKey: string | undefined,
+  from: string,
+  to: string,
+  subject: string,
+  html: string
+) {
+  if (!apiKey) {
+    console.log("-----------------------------------------");
+    console.log(`✉️ [Mail Simulation (No RESEND_API_KEY)]`);
+    console.log(`From:    ${from}`);
+    console.log(`To:      ${to}`);
+    console.log(`Subject: ${subject}`);
+    console.log("-----------------------------------------");
+    return { success: true, simulated: true };
+  }
+
+  try {
+    const emailPayload = {
+      from,
+      to: [to],
+      subject,
+      html
+    };
+
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(emailPayload)
+    });
+
+    if (res.ok) {
+      console.log(`✅ Email successfully dispatched to ${to} via Resend.`);
+      return { success: true };
+    } else {
+      const errResponse = await res.json().catch(() => null) || await res.text();
+      const errString = typeof errResponse === 'object' ? JSON.stringify(errResponse) : String(errResponse);
+      console.error(`❌ Resend API returned error status ${res.status} for ${to}:`, errString);
+      return { success: false, error: errString };
+    }
+  } catch (err: any) {
+    console.error(`❌ Exception when calling Resend API for ${to}:`, err);
+    return { success: false, error: err.message };
+  }
+}
+
+// Dispatch customized emails to BOTH DineDash team and the Restaurant Owner safely (No CC)
 async function sendNotificationEmail(data: {
   restaurantName: string;
   ownerName: string;
@@ -22,23 +72,25 @@ async function sendNotificationEmail(data: {
   restaurantType: string;
 }) {
   const apiKey = process.env.RESEND_API_KEY;
-  const targetEmail = "dinedash@bitlabsbuild.com";
+  const companyEmails = ["dinedash@bitlabsbuild.com", "berbir901@gmail.com"];
+  const fromEmail = "DineDash Onboarding <onboarding@bitlabsbuild.com>";
 
-  const emailSubject = `🔔 New DineDash Registration: ${data.restaurantName}`;
-  const emailHtml = `
+  // --- 1. EMAIL FOR DINEDASH TEAM ---
+  const companySubject = `🔔 [New Waitlist Lead] ${data.restaurantName} - Onboarding Request`;
+  const companyHtml = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 25px; border: 1px solid #f0e0df; border-radius: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(167, 57, 38, 0.05);">
       <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #fdf0ed; padding-bottom: 20px;">
-        <h1 style="color: #a73926; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em;">DineDash Ethiopia</h1>
-        <p style="color: #8b716c; margin: 5px 0 0 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">New Partner Waitlist Registration</p>
+        <h1 style="color: #a73926; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em;">DineDash Company Cockpit</h1>
+        <p style="color: #8b716c; margin: 5px 0 0 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">New Partner Lead Registration</p>
       </div>
       
       <p style="font-size: 14px; color: #555; line-height: 1.6;">Hello DineDash Team,</p>
-      <p style="font-size: 14px; color: #555; line-height: 1.6;">A new restaurant has registered on DineDash. Here are the onboarding details:</p>
+      <p style="font-size: 14px; color: #555; line-height: 1.6;">A new restaurant has registered on DineDash. Please contact them within 24 hours to proceed with digital menu onboarding:</p>
       
       <div style="background-color: #fcf9f8; border: 1px solid #fdf0ed; border-radius: 12px; padding: 20px; margin: 20px 0;">
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
-            <td style="padding: 8px 0; border-bottom: 1px solid #f4eae8; font-size: 13px; font-weight: bold; color: #8b716c; width: 140px; text-transform: uppercase; letter-spacing: 0.05em;">Restaurant Name</td>
+            <td style="padding: 8px 0; border-bottom: 1px solid #f4eae8; font-size: 13px; font-weight: bold; color: #8b716c; width: 140px; text-transform: uppercase; letter-spacing: 0.05em;">Restaurant</td>
             <td style="padding: 8px 0; border-bottom: 1px solid #f4eae8; font-size: 14px; color: #111; font-weight: bold;">${data.restaurantName}</td>
           </tr>
           <tr>
@@ -68,58 +120,96 @@ async function sendNotificationEmail(data: {
         </table>
       </div>
       
-      <p style="font-size: 13px; color: #777; line-height: 1.5;">This request has been logged successfully inside your Supabase database.</p>
+      <p style="font-size: 13px; color: #777; line-height: 1.5;">This registration lead details are saved and synced to DineDash onboarding database.</p>
+    </div>
+  `;
+
+  // --- 2. EMAIL FOR THE PARTNER (WELCOME / RECEIPT) ---
+  const partnerSubject = `Welcome to DineDash Ethiopia! 🎟️ Partner Waitlist Registered`;
+  const partnerHtml = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 25px; border: 1px solid #f0e0df; border-radius: 16px; background-color: #ffffff; box-shadow: 0 4px 20px rgba(167, 57, 38, 0.05);">
+      <div style="text-align: center; margin-bottom: 25px; border-bottom: 2px solid #fdf0ed; padding-bottom: 20px;">
+        <h1 style="color: #a73926; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em;">DineDash Ethiopia</h1>
+        <p style="color: #8b716c; margin: 5px 0 0 0; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">Partner Welcome</p>
+      </div>
+      
+      <p style="font-size: 15px; color: #111; line-height: 1.6; font-weight: bold;">Hello ${data.ownerName},</p>
+      <p style="font-size: 14px; color: #555; line-height: 1.6;">Thank you for registering <strong>${data.restaurantName}</strong> on the DineDash Ethiopia waitlist! We are excited to support your digital restaurant journey.</p>
+      
+      <p style="font-size: 14px; color: #555; line-height: 1.6;">Here are the onboarding details you successfully submitted:</p>
+      <div style="background-color: #fcf9f8; border: 1px solid #fdf0ed; border-radius: 12px; padding: 18px; margin: 18px 0;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px; color: #555;">
+          <tr>
+            <td style="padding: 6px 0; font-weight: bold; color: #8b716c; width: 140px;">Restaurant Type:</td>
+            <td style="padding: 6px 0; color: #111;">${data.restaurantType}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; font-weight: bold; color: #8b716c;">Estimated Tables:</td>
+            <td style="padding: 6px 0; color: #111;">${data.numberOfTables}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; font-weight: bold; color: #8b716c;">City:</td>
+            <td style="padding: 6px 0; color: #111;">${data.city}</td>
+          </tr>
+        </table>
+      </div>
+      
+      <p style="font-size: 14px; color: #555; line-height: 1.6;"><strong>What happens next?</strong></p>
+      <ul style="font-size: 14px; color: #555; line-height: 1.6; padding-left: 20px;">
+        <li style="margin-bottom: 8px;">A DineDash integration manager will call you at <strong>${data.phoneNumber}</strong> to review your operational requirements.</li>
+        <li style="margin-bottom: 8px;">We will prepare your personalized QR codes and set up your backend pilot dashboard.</li>
+        <li style="margin-bottom: 8px;">You will receive your login info to standardise menus, accept mobile orders, and manage tables natively.</li>
+      </ul>
+
+      <p style="font-size: 14px; color: #555; line-height: 1.6; margin-top: 25px;">If you need immediately assistance, feel free to contact us at any time.</p>
       
       <div style="margin-top: 35px; padding-top: 20px; border-top: 1px solid #fdf0ed; font-size: 11px; color: #a1908e; text-align: center; font-weight: 500;">
-        DineDash waitlist integration • Powered by <strong>BITLABS Technology</strong>
+        DineDash waitlist integration • Onboarding Operations Team
       </div>
     </div>
   `;
 
-  if (!apiKey) {
-    console.log("-----------------------------------------");
-    console.log(`✉️ [Mail Simulation (No RESEND_API_KEY)]`);
-    console.log(`To: ${targetEmail}`);
-    console.log(`Subject: ${emailSubject}`);
-    console.log(`Body Details:`, data);
-    console.log("-----------------------------------------");
-    return { success: true, simulated: true, error: "Missing RESEND_API_KEY environment variable. Simulation succeeded." };
-  }
+  // Send to ALL company Emails independently
+  let companySuccess = true;
+  let companyError = "";
 
-  try {
-    const emailPayload: any = {
-      from: "DineDash Onboarding <onboarding@resend.dev>",
-      to: [targetEmail],
-      subject: emailSubject,
-      html: emailHtml
+  for (const email of companyEmails) {
+    const res = await sendSingleEmail(apiKey, fromEmail, email, companySubject, companyHtml);
+    if (!res.success) {
+      companySuccess = false;
+      if (res.error) {
+        companyError += `Failed for ${email}: ${res.error}. `;
+      }
+    }
+  }
+  
+  let partnerResult = { success: true, simulated: false, error: undefined as string | undefined };
+  if (data.emailAddress) {
+    const pResult = await sendSingleEmail(apiKey, fromEmail, data.emailAddress, partnerSubject, partnerHtml);
+    partnerResult = {
+      success: pResult.success,
+      simulated: !!pResult.simulated,
+      error: pResult.error
     };
-
-    if (data.emailAddress) {
-      emailPayload.cc = [data.emailAddress];
-    }
-
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(emailPayload)
-    });
-
-    if (res.ok) {
-      console.log(`✅ Email successfully dispatched to ${targetEmail} via Resend.`);
-      return { success: true };
-    } else {
-      const errResponse = await res.json().catch(() => null) || await res.text();
-      const errString = typeof errResponse === 'object' ? JSON.stringify(errResponse) : String(errResponse);
-      console.error(`❌ Resend API returned error status ${res.status}:`, errString);
-      return { success: false, error: errString };
-    }
-  } catch (err: any) {
-    console.error("❌ Exception when calling Resend API:", err);
-    return { success: false, error: err.message };
   }
+
+  // Combine results
+  const bothSuccess = companySuccess && partnerResult.success;
+  const simulated = !apiKey;
+  
+  let combinedError = "";
+  if (companyError) {
+    combinedError += `DineDash Team dispatch error: ${companyError}. `;
+  }
+  if (partnerResult.error) {
+    combinedError += `Partner welcome dispatch failed: ${partnerResult.error}.`;
+  }
+
+  return {
+    success: bothSuccess,
+    simulated,
+    error: combinedError || undefined
+  };
 }
 
 export async function registerRestaurant(body: any) {

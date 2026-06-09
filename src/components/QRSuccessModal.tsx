@@ -55,8 +55,8 @@ export default function QRSuccessModal({ isOpen, onClose, data }: QRSuccessModal
               <CheckCircle className="w-3.5 h-3.5" />
             </div>
             <div className="text-xs text-gray-600">
-              <span className="font-bold text-gray-800 block">BITLABS Notified Successfully</span>
-              We have dispatched your registration parameters to <span className="font-semibold text-gray-900">dinedash@bitlabsbuild.com</span>.
+              <span className="font-bold text-gray-800 block">DineDash Notified Successfully</span>
+              We have dispatched your registration parameters securely to the DineDash integration desk.
             </div>
           </div>
 
@@ -66,7 +66,7 @@ export default function QRSuccessModal({ isOpen, onClose, data }: QRSuccessModal
             </div>
             <div className="text-xs text-gray-600">
               <span className="font-bold text-teal-800 block">Onboarding Specialist Assignment</span>
-              An integration technician from BITLABS Technology will contact you at <span className="font-semibold text-gray-900">{data.phoneNumber}</span> or <span className="font-semibold text-gray-900">{data.emailAddress}</span>.
+              An integration technician from DineDash will contact you at <span className="font-semibold text-gray-900">{data.phoneNumber}</span> or <span className="font-semibold text-gray-900">{data.emailAddress}</span>.
             </div>
           </div>
         </div>
@@ -81,7 +81,7 @@ export default function QRSuccessModal({ isOpen, onClose, data }: QRSuccessModal
         </button>
 
         <p className="text-[10px] text-gray-400 mt-4 text-center">
-          DineDash in partnership with BITLABS Technology. All rights reserved.
+          DineDash Ethiopia. All rights reserved.
         </p>
 
       </motion.div>
