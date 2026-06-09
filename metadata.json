@@ -1,0 +1,6 @@
+{
+  "name": "DineDash",
+  "description": "Your restaurant menu, in every customer's hand. Fast, friendly, and built for Ethiopia.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
