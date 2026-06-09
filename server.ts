@@ -29,8 +29,8 @@ async function sendNotificationEmail(data: {
 
   const emailSubject = `🔔 New DineDash Registration: ${data.restaurantName}`;
   const emailHtml = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #f0e0df; rounded-corners: 10px; background-color: #fdfdfd;">
-      <h2 style="color: #a73926; margin-bottom: 20px; border-bottom: 2px solid #a73926; padding-bottom: 10px;">New DineDash Restaurant Registration</h2>
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #f0e0df; border-radius: 12px; background-color: #fdfdfd; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+      <h2 style="color: #a73926; margin-bottom: 20px; border-bottom: 2px solid #a73926; padding-bottom: 10px; font-size: 20px;">New DineDash Restaurant Registration</h2>
       
       <p style="font-size: 14px; color: #555;">A new restaurateur has registered on DineDash. Here are the details:</p>
       
@@ -88,31 +88,40 @@ async function sendNotificationEmail(data: {
     console.log(`- Tables: ${data.numberOfTables}`);
     console.log(`- Type: ${data.restaurantType}`);
     console.log("-----------------------------------------");
-    return { success: true, simulated: true };
+    return { success: true, simulated: true, error: "Missing RESEND_API_KEY environment variable. Simulation succeeded." };
   }
 
   try {
+    // Determine target recipient logic
+    // We send TO targetEmail and ALSO CC data.emailAddress to assist with sandbox verification
+    const emailPayload: any = {
+      from: "DineDash Onboarding <onboarding@resend.dev>",
+      to: [targetEmail],
+      subject: emailSubject,
+      html: emailHtml
+    };
+
+    if (data.emailAddress) {
+      emailPayload.cc = [data.emailAddress];
+    }
+
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        from: "DineDash Onboarding <onboarding@resend.dev>",
-        to: targetEmail,
-        subject: emailSubject,
-        html: emailHtml
-      })
+      body: JSON.stringify(emailPayload)
     });
 
     if (res.ok) {
-      console.log(`✅ Email successfully dispatched to ${targetEmail} via Resend.`);
+      console.log(`✅ Email successfully dispatched to ${targetEmail} via Resend (CC: ${data.emailAddress}).`);
       return { success: true };
     } else {
-      const errText = await res.text();
-      console.error(`❌ Resend API returned error status ${res.status}: ${errText}`);
-      return { success: false, error: errText };
+      const errResponse = await res.json().catch(() => null) || await res.text();
+      const errString = typeof errResponse === 'object' ? JSON.stringify(errResponse) : String(errResponse);
+      console.error(`❌ Resend API returned error status ${res.status}:`, errString);
+      return { success: false, error: errString };
     }
   } catch (err: any) {
     console.error("❌ Exception when calling Resend API:", err);
@@ -195,7 +204,8 @@ async function startServer() {
       savedToSupabase,
       supabaseError,
       emailNotified: emailResult.success,
-      simulated: !supabase || emailResult.simulated
+      resendError: emailResult.error || null,
+      simulated: !process.env.RESEND_API_KEY || emailResult.simulated
     });
   });
 
