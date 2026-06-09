@@ -65,9 +65,9 @@ export default function Footer({ onScrollTo }: FooterProps) {
             <p className="text-xs text-gray-500 leading-relaxed max-w-xs font-normal">
               Modernizing the Ethiopian dining experience, one table at a time. Empowering cafes, quick service spots, and cozy bistros natively built for Ethiopia’s local payment rhythm.
             </p>
-            <div className="text-[11px] text-gray-400 flex items-center gap-1">
-              <span>Made in Ethiopia with</span>
-              <span className="text-[#a73926] animate-pulse font-normal font-sans">❤️</span>
+            <div className="text-[11px] text-gray-400 flex flex-col gap-1">
+              <span className="flex items-center gap-1">Made in Ethiopia with <span className="text-[#a73926] animate-pulse font-normal font-sans">❤️</span></span>
+              <span>Powered by <span className="font-bold text-gray-600">BITLABS Technology</span></span>
             </div>
           </div>
 
@@ -75,10 +75,10 @@ export default function Footer({ onScrollTo }: FooterProps) {
           <div className="md:col-span-2.5 text-left space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-widest text-[#8b716c]">Product</h4>
             <ul className="space-y-2 text-xs font-semibold text-gray-500">
-              <li><button onClick={() => onScrollTo('features-section')} className="hover:text-brand-primary cursor-pointer">Features</button></li>
-              <li><button onClick={() => alert('Dynamic QR Menu Builder is launching soon! Check back soon.')} className="hover:text-brand-primary cursor-pointer flex items-center gap-1"><span>Menu Builder</span><ArrowUpRight className="w-3 h-3 text-[9px] text-[#336852]" /></button></li>
-              <li><button onClick={() => onScrollTo('steps-section')} className="hover:text-brand-primary cursor-pointer">Ordering System</button></li>
-              <li><button onClick={() => onScrollTo('features-section')} className="hover:text-[#336852] cursor-pointer">Offline Status</button></li>
+              <li><button onClick={() => onScrollTo('features-section')} className="hover:text-[#a73926] cursor-pointer text-left block w-full">Features</button></li>
+              <li><button onClick={() => alert('Dynamic QR Menu Builder is launching soon! Check back soon.')} className="hover:text-[#a73926] cursor-pointer flex items-center justify-start gap-1 text-left w-full"><span>Menu Builder</span><ArrowUpRight className="w-3 h-3 text-[9px] text-[#336852]" /></button></li>
+              <li><button onClick={() => onScrollTo('steps-section')} className="hover:text-[#a73926] cursor-pointer text-left block w-full">Ordering System</button></li>
+              <li><button onClick={() => onScrollTo('features-section')} className="hover:text-[#a73926] cursor-pointer text-left block w-full">Offline Status</button></li>
             </ul>
           </div>
 
@@ -86,10 +86,10 @@ export default function Footer({ onScrollTo }: FooterProps) {
           <div className="md:col-span-2.5 text-left space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-widest text-[#8b716c]">Resources</h4>
             <ul className="space-y-2 text-xs font-semibold text-gray-500">
-              <li><button onClick={() => onScrollTo('steps-section')} className="hover:text-[#a73926] cursor-pointer">How It Works</button></li>
-              <li><button onClick={() => onScrollTo('pricing-section')} className="hover:text-[#a73926] cursor-pointer">Pricing Plans</button></li>
-              <li><button onClick={() => alert('Success stories from our local Bole and Keldi partners are coming soon!')} className="hover:text-[#a73926] cursor-pointer">Success Stories</button></li>
-              <li><button onClick={() => alert('Become a DineDash brand affiliate! Receive commissions for every registered restaurant.')} className="hover:text-[#a73926] cursor-pointer">Refer a Partner</button></li>
+              <li><button onClick={() => onScrollTo('steps-section')} className="hover:text-[#a73926] cursor-pointer text-left block w-full">How It Works</button></li>
+              <li><button onClick={() => onScrollTo('pricing-section')} className="hover:text-[#a73926] cursor-pointer text-left block w-full">Pricing Plans</button></li>
+              <li><button onClick={() => alert('Success stories from our local Bole and Keldi partners are coming soon!')} className="hover:text-[#a73926] cursor-pointer text-left block w-full">Success Stories</button></li>
+              <li><button onClick={() => alert('Become a DineDash brand affiliate! Receive commissions for every registered restaurant.')} className="hover:text-[#a73926] cursor-pointer text-left block w-full">Refer a Partner</button></li>
             </ul>
           </div>
 
@@ -97,10 +97,10 @@ export default function Footer({ onScrollTo }: FooterProps) {
           <div className="md:col-span-3 text-left space-y-3">
             <h4 className="text-xs font-bold uppercase tracking-widest text-[#8b716c]">Support</h4>
             <ul className="space-y-2 text-xs font-semibold text-gray-500">
-              <li><button onClick={() => onScrollTo('faq-section')} className="hover:text-brand-primary cursor-pointer">Help Center / FAQ</button></li>
-              <li><a href="mailto:support@dinedash.et" className="hover:text-brand-primary">support@dinedash.et</a></li>
-              <li><button onClick={() => alert('Support lines active 24/7 at +251 900 123456.')} className="hover:text-brand-primary cursor-pointer">Terms of Service</button></li>
-              <li><button onClick={() => alert('Privacy policy is standard and safe under local regulations.')} className="hover:text-brand-primary cursor-pointer">Privacy Policy</button></li>
+              <li><button onClick={() => onScrollTo('faq-section')} className="hover:text-[#a73926] cursor-pointer text-left block w-full">Help Center / FAQ</button></li>
+              <li><a href="mailto:support@dinedash.et" className="hover:text-[#a73926] block w-full text-left">support@dinedash.et</a></li>
+              <li><button onClick={() => alert('Support lines active 24/7 at +251 900 123456.')} className="hover:text-[#a73926] cursor-pointer text-left block w-full">Terms of Service</button></li>
+              <li><button onClick={() => alert('Privacy policy is standard and safe under local regulations.')} className="hover:text-[#a73926] cursor-pointer text-left block w-full">Privacy Policy</button></li>
             </ul>
           </div>
 
@@ -108,8 +108,8 @@ export default function Footer({ onScrollTo }: FooterProps) {
 
         {/* Bottom copyright row */}
         <div className="border-t border-gray-200 mt-12 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] text-gray-400 font-semibold uppercase tracking-wider">
-          <div>
-            © {new Date().getFullYear()} DineDash. Proudly serving Ethiopia's restaurant community.
+          <div className="text-center sm:text-left">
+            © {new Date().getFullYear()} DineDash. Powered by <span className="font-bold text-gray-600 hover:text-[#a73926] transition-colors">BITLABS Technology</span>. Proudly serving Ethiopia's restaurant community.
           </div>
           <div className="flex gap-4">
             <span className="hover:text-gray-600 cursor-pointer">Security</span>

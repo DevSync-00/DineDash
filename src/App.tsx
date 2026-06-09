@@ -25,7 +25,7 @@ import { MENU_ITEMS, INITIAL_TABLES, INITIAL_ORDERS } from './data';
 import { Order, TableStatus, MenuItem, QRRequestData } from './types';
 
 /* Imported Assets */
-import heroScanImg from './assets/images/hero_scan_qr_1780999178770.png';
+import heroScanImg from './assets/images/hero_scan_qr_new_1781002228007.png';
 
 export default function App() {
   /* Dynamic App State matching our specifications */
@@ -183,14 +183,54 @@ export default function App() {
   };
 
   /* QR Code generation form submission captures client and unlocks stand kit */
-  const handleQRFormSubmit = (data: QRRequestData) => {
-    setRequestData(data);
-    setIsSuccessOpen(true);
-    addToast(
-      'Registration Complete! 🎟️',
-      `Welcome ${data.ownerName}! Your sample flyer stand for ${data.restaurantName} table 5 is ready.`,
-      'success'
-    );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleQRFormSubmit = async (data: QRRequestData) => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Server error occurred during hotel registration.');
+      }
+
+      setRequestData(data);
+      setIsSuccessOpen(true);
+      
+      if (result.simulated) {
+        addToast(
+          'Registration Simulated! 🎟️',
+          `Welcome ${data.ownerName}! Simulated email notification & database record processed on server.`,
+          'info'
+        );
+      } else {
+        addToast(
+          'Registration Complete! 🎟️',
+          `Successfully saved to Supabase & sent waitlist alert email! Welcome, ${data.ownerName}.`,
+          'success'
+        );
+      }
+    } catch (err: any) {
+      console.error('Registration failed:', err);
+      // Give local fallback so the user always has a seamless interface preview
+      setRequestData(data);
+      setIsSuccessOpen(true);
+      addToast(
+        'Offline/Demo Mode Saved Locally ⚡',
+        `Details cached locally. (Database/Email notification skipped: ${err.message})`,
+        'alert'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -289,7 +329,7 @@ export default function App() {
       <Pricing onScrollTo={handleScrollTo} />
 
       {/* QR Request registration Form */}
-      <QRGeneratorForm onSubmitRequest={handleQRFormSubmit} />
+      <QRGeneratorForm onSubmitRequest={handleQRFormSubmit} isSubmitting={isSubmitting} />
 
       {/* Testimonials */}
       <Testimonials />

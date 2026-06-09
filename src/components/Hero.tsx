@@ -82,7 +82,7 @@ export default function Hero({ onScrollTo, onOpenLiveDemo, heroImageSrc }: HeroP
             
             <div className="relative max-w-md lg:max-w-none w-full" id="hero-img-container">
               {/* Photo Frame */}
-              <div className="bg-white p-3.5 rounded-[2.5rem] shadow-2xl border border-gray-150 rotate-2 hover:rotate-0 transition-transform duration-500 overflow-hidden group">
+              <div className="bg-white p-4.5 rounded-[2.5rem] shadow-[0_25px_60px_rgba(0,0,0,0.15)] border border-gray-150 rotate-2 hover:rotate-0 transition-transform duration-500 overflow-hidden group">
                 <img 
                   src={heroImageSrc} 
                   alt="Customer scanning DineDash QR Code at table" 
@@ -93,19 +93,19 @@ export default function Hero({ onScrollTo, onOpenLiveDemo, heroImageSrc }: HeroP
               </div>
 
               {/* Floating Pill-Badge: Try Live Demo */}
-              <div className="absolute -bottom-6 -left-6 z-10" id="floating-live-demo-pill">
+              <div className="absolute -bottom-8 left-5 sm:-left-6 lg:-left-10 z-20" id="floating-live-demo-pill">
                 <button
                   onClick={onOpenLiveDemo}
-                  className="flex items-center gap-3.5 bg-white px-5 py-4 rounded-2.5xl shadow-xl hover:shadow-2xl border border-gray-100 hover:scale-105 active:scale-95 transition-all text-left cursor-pointer group/pill"
+                  className="flex items-center gap-4 bg-white p-4.5 rounded-3xl shadow-[0_15px_40px_rgba(0,0,0,0.12)] border border-gray-100 hover:border-[#a73926]/20 hover:shadow-[0_20px_50px_rgba(0,0,0,0.18)] hover:-translate-y-1 active:scale-97 transition-all text-left cursor-pointer group/pill"
                 >
-                  <div className="w-10 h-10 bg-[#fdf0ed] text-[#a73926] rounded-xl flex items-center justify-center group-hover/pill:bg-[#a73926] group-hover/pill:text-white transition-colors duration-300">
-                    <QrCode className="w-5.5 h-5.5 animate-pulse" />
+                  <div className="w-14 h-14 bg-[#fdf0ed] text-[#a73926] rounded-2xl flex items-center justify-center shrink-0 shadow-inner group-hover/pill:bg-[#a73926] group-hover/pill:text-white transition-all duration-300">
+                    <QrCode className="w-7 h-7" />
                   </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-gray-400 block tracking-wider leading-none">
+                  <div className="pr-4 sm:pr-6 select-none">
+                    <span className="text-[10px] uppercase font-bold text-[#8b716c]/70 block tracking-[0.12em] leading-none">
                       Instant Scan
                     </span>
-                    <span className="text-sm font-black text-gray-800 block mt-0.5 group-hover/pill:text-[#a73926] transition-colors">
+                    <span className="text-base sm:text-lg font-extrabold text-gray-900 block mt-1.5 tracking-tight group-hover/pill:text-[#a73926] transition-colors leading-none">
                       Try Live Demo
                     </span>
                   </div>

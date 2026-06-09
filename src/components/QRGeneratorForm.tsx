@@ -4,9 +4,10 @@ import { QRRequestData } from '../types';
 
 interface QRGeneratorFormProps {
   onSubmitRequest: (data: QRRequestData) => void;
+  isSubmitting?: boolean;
 }
 
-export default function QRGeneratorForm({ onSubmitRequest }: QRGeneratorFormProps) {
+export default function QRGeneratorForm({ onSubmitRequest, isSubmitting = false }: QRGeneratorFormProps) {
   const [formData, setFormData] = useState<QRRequestData>({
     restaurantName: '',
     ownerName: '',
@@ -218,10 +219,25 @@ export default function QRGeneratorForm({ onSubmitRequest }: QRGeneratorFormProp
                 {/* CTA Button */}
                 <button
                   type="submit"
-                  className="w-full py-4 bg-[#a73926] hover:bg-[#8e2e1c] text-white text-sm font-bold rounded-2xl transition-colors shadow-lg shadow-[#a73926]/10 cursor-pointer block mt-6"
+                  disabled={isSubmitting}
+                  className={`w-full py-4 text-white text-sm font-bold rounded-2xl transition-colors shadow-lg shadow-[#a73926]/10 block mt-6 ${
+                    isSubmitting 
+                      ? 'bg-gray-400 cursor-not-allowed' 
+                      : 'bg-[#a73926] hover:bg-[#8e2e1c] cursor-pointer'
+                  }`}
                   id="submit-qr-request-btn"
                 >
-                  Get My Free QR Code
+                  {isSubmitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      <span>Processing Registration...</span>
+                    </span>
+                  ) : (
+                    'Get My Free QR Code'
+                  )}
                 </button>
 
                 <p className="text-[10px] text-gray-400 text-center select-none pt-1">

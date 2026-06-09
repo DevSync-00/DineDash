@@ -113,8 +113,8 @@ export default function QRSuccessModal({ isOpen, onClose, data }: QRSuccessModal
                 </span>
               </div>
 
-              <div className="text-[8px] font-semibold text-gray-300 tracking-widest mt-1">
-                Powered by DineDash Ethiopia
+              <div className="text-[8px] font-bold text-gray-400 tracking-widest mt-1 uppercase">
+                DineDash • Powered by BITLABS Technology
               </div>
 
             </div>
