@@ -1,7 +1,3 @@
-<div align="center">
-<img width="1200" height="475" alt="DineDash Banner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
-
 # DineDash Ethiopia
 
 > **Your restaurant menu, in every customer's pocket. Fast, friendly, and custom-tailored for the Ethiopian hospitality rhythm.**
